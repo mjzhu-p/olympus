@@ -400,7 +400,7 @@ class Emulator(Object):
         )
         Logger.log(
             "Validation {}: {0:.4f} +/- {1:.4f}".format(
-                self.metrics_names[1].upper(), cv_rmsd_score_mean, cv_rmsd_score_stderr
+                self.metrics_names[1].upper(), cv_metric2_score_mean, cv_metric2_score_stderr
             ),
             "INFO",
         )
