@@ -336,7 +336,7 @@ class Dataset:
         self._description = "\n".join(_description)
 
 
-    def run(self, params, return_paramvector=False, noiseless=False):
+    def run(self, params, return_paramvector=False, noiseless=True):
         """run method to allow lookup of target values for fully categorical
         parameter spaces. This method is named run to make it interchangable with
         the emulator and surface objects within Olympus, such that it can be used in the
