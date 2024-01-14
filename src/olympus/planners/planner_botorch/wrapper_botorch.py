@@ -127,6 +127,15 @@ class Botorch(AbstractPlanner):
             Logger.log(message, 'WARNING')
             self.has_descriptors = False
 
+        for param_ix, param in enumerate(self.param_space):
+            if param.type == "discrete":
+                num_options = int(
+                    ((param.high - param.low) / 1) + 1
+                )
+                param.options = np.linspace(param.low, param.high, num_options).tolist()
+            # self.has_descriptors = True  # hard-coded for the crossed-barrel benchmark
+
+
 
     def build_train_data(self):
         """build the training dataset at each iteration"""
@@ -143,6 +152,8 @@ class Botorch(AbstractPlanner):
                 if self.param_space[param_ix].type == "categorical":
                     feat = cat_param_to_feat(space_true, element, self.use_descriptors)
                     sample_x.extend(feat)
+                elif self.param_space[param_ix].type == "discrete":
+                    sample_x.append(int(element))
                 else:
                     sample_x.append(float(element))
             target_params.append(sample_x)
@@ -187,9 +198,9 @@ class Botorch(AbstractPlanner):
         self._params = (
             observations.get_params()
         )  # string encodings of categorical params
-        # TODO: taking not of flip_measurements is a hack - why is this needed? 
+        # TODO: taking not of flip_measurements is a hack - why is this needed?
         self._values = observations.get_values(
-            as_array=True, opposite=np.logical_not(self.flip_measurements)
+            as_array=True, opposite=bool(np.logical_not(self.flip_measurements))
         )
         # make values 2d if they are not already
         if len(np.array(self._values).shape) == 1:
@@ -202,10 +213,16 @@ class Botorch(AbstractPlanner):
         dim = 0
         cat_dims = []
         for param in self.param_space:
-            if param.type in ["continuous", "discrete"]:
+            if param.type in ["continuous"]:
                 dim += 1
-            elif param.type == "categorical":
+                pass
+            elif param.type in ["categorical"]:
                 num_opts = len(param.options)
+                cat_dims.extend(np.arange(dim, dim + num_opts))
+                dim += num_opts
+            else:  # param.type in ["discrete"]:
+                # num_opts = len(param.options)
+                num_opts = 1
                 cat_dims.extend(np.arange(dim, dim + num_opts))
                 dim += num_opts
         return cat_dims
@@ -251,7 +268,7 @@ class Botorch(AbstractPlanner):
 
             # fit the GP
             mll = ExactMarginalLogLikelihood(model.likelihood, model)
-            fit_gpytorch_mll(mll)
+            fit_gpytorch_model(mll)
 
             # get the incumbent point
             f_best_argmin = torch.argmin(self.train_y_scaled)
@@ -280,7 +297,7 @@ class Botorch(AbstractPlanner):
                     num_restarts=200,
                     q=self.batch_size,
                     raw_samples=1000,
-                    fixed_features_list=[],
+                    fixed_features_list=[{0:v} for v in range(6,13)], # it is hard-coded for the crossed-barrel example
                 )
             elif self.problem_type == "fully_categorical":
                 # need to implement the choices input, which is a
