@@ -13,7 +13,7 @@ from olympus.planners import Planner
 from olympus.scalarizers import Scalarizer
 
 
-sys.path.append('../../')
+sys.path.append('../../../')
 from utils import save_pkl_file, load_data_from_pkl_and_continue
 
 #--------
