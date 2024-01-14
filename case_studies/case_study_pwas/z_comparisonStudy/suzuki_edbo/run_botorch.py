@@ -24,7 +24,7 @@ dataset_name = 'suzuki_edbo'
 planner_name = 'Botorch'
 
 budget = 50
-num_repeats = 1
+num_repeats = 30
 
 # check whether we are appending to previous results
 data_all_repeats, missing_repeats = load_data_from_pkl_and_continue(num_repeats)
