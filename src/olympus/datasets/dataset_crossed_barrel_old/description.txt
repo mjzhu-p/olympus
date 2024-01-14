@@ -14,7 +14,7 @@ Science advances, 6(15):eaaz1708, 2020
     Number of Samples             600
     Dimensionality                 4
     Features:
-        n                    discrete
+        n                    continuous
         theta                continuous
         r                    continuous
         t                    continuous
