@@ -81,7 +81,6 @@ def cat_param_to_feat(param, val, use_descriptors):
         feat = param.descriptors[arg_val]
     return feat
 
-
 def propose_randomly(num_proposals, param_space, use_descriptors):
     """Randomly generate num_proposals proposals. Returns the numerical
     representation of the proposals as well as the string based representation
@@ -102,10 +101,11 @@ def propose_randomly(num_proposals, param_space, use_descriptors):
                 raw_sample.append(p)
             elif param.type == "discrete":
                 num_options = int(
-                    ((param.high - param.low) / param.stride) + 1
+                    ((param.high - param.low) / 1) + 1 # TODO: need to update stride part
                 )
-                options = np.linspace(param.low, param.high, num_options)
+                options = np.linspace(param.low, param.high, num_options).tolist()
                 p = np.random.choice(options, size=None, replace=False)
+                # feat = cat_param_to_feat(param, p, use_descriptors)
                 sample.append(p)
                 raw_sample.append(p)
             elif param.type == "categorical":
@@ -197,7 +197,15 @@ def project_to_olymp(
                 idx_counter += len(param.options)
         elif param.type == "discrete":
             # TODO: discrete params not supported now
-            pass
+            # pass
+            sample = results_np[idx_counter]
+            if sample > param.high:
+                sample = param.high
+            elif sample < param.low:
+                sample = param.low
+            else:
+                pass
+            idx_counter += 1
         # add sample to dictionary
         olymp_samples[param.name] = sample
 
@@ -217,7 +225,8 @@ def get_bounds(param_space, has_descriptors):
     """
     bounds = []
     for param_ix, param in enumerate(param_space):
-        if param.type == "continuous":
+        # if param.type == "continuous":
+        if param.type in ["continuous", "discrete"]:
             b = np.array([param.low, param.high])
             # b = (b - self._means_x[param_ix]) / self._stds_x[param_ix]
             bounds.append(b)
