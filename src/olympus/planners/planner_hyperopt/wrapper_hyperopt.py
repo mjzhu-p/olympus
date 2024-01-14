@@ -39,7 +39,8 @@ class Hyperopt(AbstractPlanner):
                 param_dict = {
                     "name": param.name,
                     "type": param.type,
-                    "domain": (param.low, param.high, param.stirde),
+                    # "domain": (param.low, param.high, param.stirde),
+                    "domain": (param.low, param.high, 1), # TODO: hard-coded for the crossed-barrerl example
                 }
             elif param.type == "categorical":
                 param_dict = {
@@ -82,9 +83,9 @@ class Hyperopt(AbstractPlanner):
                         param["name"],
                         hp.quniform(
                             param["name"],
-                            param["domian"][0],
-                            param["domian"][1],
-                            param["domian"][2],
+                            param["domain"][0],
+                            param["domain"][1],
+                            param["domain"][2],
                         ),
                     )
                 )
@@ -133,7 +134,8 @@ class Hyperopt(AbstractPlanner):
         _ = fmin(
             fn=lambda x: 0,
             space=self._hp_space,
-            algo=tpe.suggest,
+            # algo=tpe.suggest,
+            algo=partial(tpe.suggest, n_startup_jobs=10),
             max_evals=self.num_generated,
             trials=self._trials,
             show_progressbar=self.show_progressbar,
@@ -148,6 +150,8 @@ class Hyperopt(AbstractPlanner):
         for param_ix, param in enumerate(self._param_space):
             value = proposed_params[param["name"]]
             if param["type"] == "continuous":
+                return_params[param["name"]] = value[0]
+            elif param["type"] == "discrete":
                 return_params[param["name"]] = value[0]
             elif param["type"] == "categorical":
                 return_params[param["name"]] = param["options"][
