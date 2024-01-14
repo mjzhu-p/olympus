@@ -19,7 +19,7 @@ setuptools>=41.0.0
 silence_tensorflow
 #smac==0.9.0
 sobol_seq
-sqlalchemy
+SQLAlchemy==1.4.47
 SQSnobFit
 tensorflow==1.15
 tensorflow-probability==0.8

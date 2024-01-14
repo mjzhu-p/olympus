@@ -141,7 +141,7 @@ class Dataset:
             else:
                 # if mixed-valued targets, complain --> we dont support this yet
                 message = 'We currently do not support emulation of mixed continuous-ordinal objective spaces'
-                Logger.log(messgae, 'FATAL')
+                Logger.log(message, 'FATAL')
 
 
             # define attributes of interest - done here so to avoid calling load_dataset again

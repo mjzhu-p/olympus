@@ -169,7 +169,7 @@ class Campaign(Object):
         # quick check if we have the proper value space for this method
         if not np.all([v.type=='ordinal' for v in self.value_space]):
             message = '"observations_to_int" method reserved for use with ordinal objectives only'
-            Logger.log(mesage, 'FATAL')
+            Logger.log(message, 'FATAL')
         if self.observations.values is not None:
             str_values = self.observations.get_values()
             int_values = []
@@ -187,7 +187,7 @@ class Campaign(Object):
         """
         if not np.all([v.type=='ordinal' for v in self.value_space]):
             message = '"observations_to_str" method reserved for use with ordinal objectives only'
-            Logger.log(mesage, 'FATAL')
+            Logger.log(message, 'FATAL')
         if self.observations.values is not None:
             int_values = self.observations.get_values()
             str_values = []
