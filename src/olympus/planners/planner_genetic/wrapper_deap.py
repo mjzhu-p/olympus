@@ -217,7 +217,7 @@ class Genetic(AbstractPlanner):
 					sample.append(p)
 				elif param.type == "discrete":
 					num_options = int(
-						((param.low - param.high) / 1) + 1
+						((param.high - param.low) / 1) + 1
 					)
 					options = np.linspace(param.low, param.high, num_options)
 					p = np.random.choice(options, size=None, replace=False)
