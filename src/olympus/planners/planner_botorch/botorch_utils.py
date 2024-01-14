@@ -22,6 +22,10 @@ def infer_problem_type(param_space):
         "continuous" in param_types, "categorical" in param_types
     ):
         problem_type = "mixed"
+    elif np.logical_and(
+        "continuous" in param_types, "discrete" in param_types
+    ):
+        problem_type = "mixed"
     return problem_type
 
 

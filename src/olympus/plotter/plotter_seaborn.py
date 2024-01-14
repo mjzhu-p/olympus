@@ -52,7 +52,8 @@ class PlotterSeaborn(AbstractPlotter):
                     color="k",
                     ax=ax,
                     linewidth=5,
-                    ci=None,
+                    # ci=None,
+                    errorbar=None,
                 )
                 sns.lineplot(
                     x="idxs",

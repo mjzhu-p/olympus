@@ -983,6 +983,10 @@ class AbstractPlotter(Object):
             "continuous" in param_types, "categorical" in param_types
         ):
             problem_type = "mixed"
+        elif np.logical_and(
+            "continuous" in param_types, "discrete" in param_types
+        ):
+            problem_type = "mixed"
         if len(value_space) > 1:
             problem_type = "-".join([problem_type, "moo"])
         return problem_type

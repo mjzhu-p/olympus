@@ -131,7 +131,10 @@ class Genetic(AbstractPlanner):
 			Logger.log(message, 'WARNING')
 			self.toolbox.register('mate', tools.cxUniform, indpb=0.5)
 		else:
-			self.toolbox.register("mate", **self.select_args)
+			message = 'Resorting to cxTwoPoint mating with parameter dimension greater than 2'
+			Logger.log(message, 'WARNING')
+			# self.toolbox.register("mate", **self.select_args)
+			self.toolbox.register("mate", tools.cxTwoPoint)
 
 		# ----------------
 		# mutate operation

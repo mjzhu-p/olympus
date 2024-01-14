@@ -50,10 +50,12 @@ class RandomSearch(AbstractPlanner):
                 opts_.append(param.options)
                 self.has_cat_discr = True
             elif param.type == "discrete":
-                if param.options!=[]:
-                    opts_.append(param.options)
+                if hasattr(param,'options'):
+                    if param.options!=[]:
+                        opts_.append(param.options)
                 else:
-                    opts_.append(np.arange(param.low, param.high, param.stride))
+                    # opts_.append(np.arange(param.low, param.high, param.stride))
+                    opts_.append(np.arange(param.low, param.high+1, 1))  #TODO: need to make it more general
                 self.has_cat_discr = True
             else:
                 raise NotImplementedError(

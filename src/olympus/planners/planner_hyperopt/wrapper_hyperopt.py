@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 import numpy as np
 from hyperopt import JOB_STATE_DONE, STATUS_OK, Trials, fmin, hp, tpe
+from functools import partial
 
 from olympus.objects import ParameterVector
 from olympus.planners import AbstractPlanner

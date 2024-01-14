@@ -86,7 +86,8 @@ class Botorch(AbstractPlanner):
         use_descriptors=False,
         batch_size=1,
         random_seed=None,
-        num_init_design=5,
+        # num_init_design=5,
+        num_init_design=10,
         init_design_strategy="random",
         **kwargs,
     ):
