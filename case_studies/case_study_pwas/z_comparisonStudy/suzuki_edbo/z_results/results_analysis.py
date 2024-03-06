@@ -125,12 +125,12 @@ def plot_trace_mean(traces, obj_num=None, ax=None, color=None, label=None, use_s
 
     x = np.arange(1, len(mean) + 1, 1)
 
-    ax.plot(x, mean, color='#444444', linewidth=5, zorder=11)
-    ax.plot(x, mean, color=color, linewidth=4, label=label, zorder=11)
+    # ax.plot(x, mean, color='#444444', linewidth=5, zorder=11)
+    ax.plot(x, mean, color=color, linewidth=2.5, label=label, zorder=11)
 
     ax.fill_between(x, y1=mean - 1.96 * stde, y2=mean + 1.96 * stde, alpha=0.2, color=color, zorder=10)
-    ax.plot(x, mean - 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
-    ax.plot(x, mean + 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
+    # ax.plot(x, mean - 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
+    # ax.plot(x, mean + 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
 
 
 def plot_num_eval_top_k(df, ax):
@@ -338,24 +338,34 @@ df_num_eval = pd.DataFrame(dict_)
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
-plot_trace_mean(raw_traces_random, use_std_err=True, label='Random', ax=ax,color='#0e4581')
-plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax, color='#EB0789')
-plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax, color="#75BBE1")
-plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax, color="#F75BB6")
-plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax, color="#4CAF50")
-plot_trace_mean(raw_traces_edbo, use_std_err=True, label='EDBO', ax=ax, color="#FF9800")
+zoomed_axes_2 = ax.inset_axes([0.7, 0.35, 0.25, 0.42], # [x, y, width, height] w.r.t. axes
+                                xticks= (range(45,51,5)), yticks= (range(90,100,5)),
+                                xlim=[45, 50], ylim=[88, 100], # sets viewport & tells relation to main axes
+                              )
 
-ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
-ax.legend(loc='lower right')
+for ax_ in ax, zoomed_axes_2:
+    plot_trace_mean(raw_traces_random, use_std_err=True, label='Random', ax=ax_,color='#0e4581')
+    plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax_, color='#EB0789')
+    plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax_, color="#75BBE1")
+    plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax_, color="#F75BB6")
+    plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax_, color="#4CAF50")
+    plot_trace_mean(raw_traces_edbo, use_std_err=True, label='EDBO', ax=ax_, color="#FF9800")
+
+# ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
+ax.legend(loc='lower right',ncol=3,frameon=False)
 ax.set_yticks(range(25, 101, 10))
 ax.set_ylim(25, 100)
-ax.set_ylabel('best yield achieved (%)', fontsize=14)
-ax.set_xlabel('# evaluations', fontsize=14)
+ax.set_ylabel('Best yield achieved (%)', fontsize=14)
+ax.set_xlabel('# of iterations', fontsize=14)
+
+ax.indicate_inset_zoom(zoomed_axes_2, edgecolor="gray")
+
 
 ax.grid(linestyle=":")
 
 plt.tight_layout()
 plt.savefig('yield_trace_mean_suzuki_edbo.png', dpi=400)
+plt.savefig('yield_trace_mean_suzuki_edbo.pdf', dpi=400)
 
 # %%
 
@@ -365,21 +375,22 @@ fig, ax = plt.subplots(1, 1, figsize=(6, 4.5))
 
 plot_trace_mean(rank_traces_random, use_std_err=True, label='Random', ax=ax, color='#0e4581')
 plot_trace_mean(rank_traces_deap, use_std_err=True, label='Genetic', ax=ax, color='#EB0789')
-plot_trace_mean(rank_traces_hyperopt, use_std_err=True, label='Hyperopt (TPE)', ax=ax, color="#75BBE1")
-plot_trace_mean(rank_traces_botorch, use_std_err=True, label='Botorch (GP)', ax=ax, color="#F75BB6")
+plot_trace_mean(rank_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax, color="#75BBE1")
+plot_trace_mean(rank_traces_botorch, use_std_err=True, label='Botorch', ax=ax, color="#F75BB6")
 plot_trace_mean(rank_traces_pwas, use_std_err=True, label='PWAS', ax=ax, color="#4CAF50")
 plot_trace_mean(rank_traces_edbo, use_std_err=True, label='EDBO', ax=ax, color="#FF9800")
 
 ax.set_yscale('log')
 ax.legend(loc='upper right',ncol=2,frameon=False)
 
-ax.set_ylabel('best yield rank achieved', fontsize=14)
-ax.set_xlabel('# evaluations', fontsize=14)
+ax.set_ylabel('Best yield rank achieved', fontsize=14)
+ax.set_xlabel('# of iterations', fontsize=14)
 ax.tick_params(axis='both', which='major', labelsize=14)
 ax.grid(linestyle=":")
 
 plt.tight_layout()
 plt.savefig('yield_rank_traces_suzuki_edbo.png', dpi=400)
+plt.savefig('yield_rank_traces_suzuki_edbo.pdf', dpi=400)
 
 # %%
 
@@ -387,7 +398,7 @@ fig, ax = plt.subplots(1, 1, figsize=(6, 4.5))
 
 plot_num_eval_top_k(df_num_eval, ax=ax)
 
-ax.set_ylabel(f'# evaluations for top-{k} yield', fontsize=14)
+ax.set_ylabel(f'# of iterations for first top-{k} yield', fontsize=14)
 ax.set_xlabel(f'')
 
 ax.set_ylim(0, 60)
@@ -395,6 +406,7 @@ ax.grid(linestyle=":")
 
 plt.tight_layout()
 plt.savefig('yield_boxplots_suzuki_edbo.png', dpi=400)
+plt.savefig('yield_boxplots_suzuki_edbo.pdf', dpi=400)
 
 # %%
 

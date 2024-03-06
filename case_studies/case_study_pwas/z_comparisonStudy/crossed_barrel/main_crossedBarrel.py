@@ -50,10 +50,12 @@ plt.figure(figsize=(14, 7))
 
 viridis = plt.cm.get_cmap('viridis', Ntests)
 out_Ntests = []
+cpu_time = []
 for i in range(0, Ntests):
     seed(i)  # rng default for reproducibility
 
-    tic = time.perf_counter()
+    # tic = time.perf_counter()
+    tic = time.process_time()
 
     # initialize the PWAS solver
     optimizer = PWAS(obj_fun, lb, ub, delta_E, nc, nint, nd, X_d, nsamp, maxevals,  # pass fun to PWAS
@@ -64,10 +66,12 @@ for i in range(0, Ntests):
                      acq_stage=acq_stage, integer_cut=True)
     xopt1, fopt1 = optimizer.solve()
 
-    toc = time.perf_counter()
+    # toc = time.perf_counter()
+    toc = time.process_time()
 
     out = optimizer.result_output()
     out_Ntests.append(out)
+    cpu_time.append(toc-tic)
     print("Test # %2d, elapsed time: %5.4f" % (i + 1, toc - tic))
 
 if Ntests == 1:
@@ -91,6 +95,10 @@ if Ntests == 1:
     plt.show()
 
 else:
+    import pandas as pd
+    cpu_time = pd.DataFrame(cpu_time)
+    export_path_3 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/pwas_cpu_1901_5.csv'
+    cpu_time.to_csv(export_path_3)
     nvars = nc + nint + nd
     nvars_encoded = out_Ntests[0]['self'].prob.nvars_encoded
     xopt_Ntests = zeros((Ntests, nvars))

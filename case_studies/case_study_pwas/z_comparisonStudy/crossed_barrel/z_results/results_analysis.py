@@ -16,12 +16,12 @@ def plot_trace_mean(traces, obj_num=None, ax=None, color=None, label=None, use_s
 
     x = np.arange(1, len(mean) + 1, 1)
 
-    ax.plot(x, mean, color=color, linewidth=5, zorder=11)
-    ax.plot(x, mean, color=color, linewidth=4, label=label, zorder=11)
+    # ax.plot(x, mean, color=color, linewidth=5, zorder=11)
+    ax.plot(x, mean, color=color, linewidth=2.5, label=label, zorder=11)
 
     ax.fill_between(x, y1=mean - 1.96 * stde, y2=mean + 1.96 * stde, alpha=0.2, color=color, zorder=10)
-    ax.plot(x, mean - 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
-    ax.plot(x, mean + 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
+    # ax.plot(x, mean - 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
+    # ax.plot(x, mean + 1.96 * stde, color=color, linewidth=1, alpha=0.5, zorder=10)
 
 
 def get_raw_traces(data, goal='maximize'):
@@ -32,11 +32,20 @@ def get_raw_traces(data, goal='maximize'):
     return np.array(traces)
 
 # %%
-matrix_excel_file = 'results_pwas.xlsx'
+matrix_excel_file = 'results_pwas_edbo.xlsx'
 sheet_name_pwas = 'pwas'
+sheet_name_edbo_1 = 'edbo_100'
+sheet_name_edbo_2 = 'edbo_10'
+sheet_name_edbo_3 = 'edbo_5'
 pwas_df = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_pwas).iloc[0:, 1:]
+edbo_df_1 = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_edbo_1).iloc[0:, 1:]
+edbo_df_2 = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_edbo_2).iloc[0:, 1:]
+edbo_df_3 = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_edbo_3).iloc[0:, 1:]
 
 raw_traces_pwas = np.array(pwas_df.cummax(axis=1))
+raw_traces_edbo_1 = np.array(edbo_df_1.cummax(axis=1))
+raw_traces_edbo_2 = np.array(edbo_df_2.cummax(axis=1))
+raw_traces_edbo_3 = np.array(edbo_df_3.cummax(axis=1))
 
 # %%
 
@@ -64,21 +73,59 @@ raw_traces_botorch = get_raw_traces(res_botorch)
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
-plot_trace_mean(raw_traces_random, use_std_err=True, label='Random', ax=ax,color='#0e4581')
-plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax, color='#EB0789')
-plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax, color="#75BBE1")
-plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax, color="#F75BB6")
-plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax, color="#4CAF50")
+zoomed_axes_2 = ax.inset_axes([0.82, 0.3, 0.13, 0.36], # [x, y, width, height] w.r.t. axes
+                                xticks= (range(40,51,5)), yticks= (range(27,37,3)),
+                                xlim=[40, 50], ylim=[29, 37], # sets viewport & tells relation to main axes
+                              )
+for ax_ in ax, zoomed_axes_2:
+    plot_trace_mean(raw_traces_random, use_std_err=True, label='Random', ax=ax_,color='#0e4581')
+    plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax_, color='#EB0789')
+    plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax_, color="#75BBE1")
+    plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax_, color="#F75BB6")
+    plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax_, color="#4CAF50")
+    plot_trace_mean(raw_traces_edbo_1, use_std_err=True, label='EDBO_1', ax=ax_, color="#FF9800")
+    # plot_trace_mean(raw_traces_edbo_2, use_std_err=True, label='EDBO_2', ax=ax, color="#FFE5B4")
+    # plot_trace_mean(raw_traces_edbo_3, use_std_err=True, label='EDBO_3', ax=ax, color="#FFF5EE")
 
-
-ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
-ax.legend(loc='lower right')
+# ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
+ax.legend(loc='lower right',ncol=3,frameon=False, fontsize='small')
 ax.set_yticks(range(9, 38, 3))
 ax.set_ylim(9, 38)
-ax.set_ylabel('best toughness achieved (J)', fontsize=14)
-ax.set_xlabel('# evaluations', fontsize=14)
+ax.set_ylabel('Best toughness achieved (J)', fontsize=14)
+ax.set_xlabel('# of iterations', fontsize=14)
+
+ax.indicate_inset_zoom(zoomed_axes_2, edgecolor="gray")
 
 ax.grid(linestyle=":")
 plt.tight_layout()
 plt.savefig('toughness_trace_mean_crossedBarrel.png', dpi=400)
+plt.savefig('toughness_trace_mean_crossedBarrel.pdf', dpi=400)
+
+# %%
+
+fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+
+zoomed_axes_1 = ax.inset_axes([0.75, 0.3, 0.15, 0.45], # [x, y, width, height] w.r.t. axes
+                                xticks= (range(40,51,5)), yticks= (range(33,37,3)),
+                                xlim=[40, 50], ylim=[33, 37.3], # sets viewport & tells relation to main axes
+                              )
+
+for ax_ in ax, zoomed_axes_1:
+    plot_trace_mean(raw_traces_edbo_1, use_std_err=True, label='EDBO_1', ax=ax_, color="#FF9800")
+    plot_trace_mean(raw_traces_edbo_2, use_std_err=True, label='EDBO_2', ax=ax_, color= "#CD7F32")
+    plot_trace_mean(raw_traces_edbo_3, use_std_err=True, label='EDBO_3', ax=ax_, color="#FAC898")
+
+# ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
+ax.legend(loc='lower right',ncol=3,frameon=False, fontsize='small')
+ax.set_yticks(range(9, 38, 3))
+ax.set_ylim(9, 38)
+ax.set_ylabel('Best toughness achieved (J)', fontsize=14)
+ax.set_xlabel('# of iterations', fontsize=14)
+
+ax.indicate_inset_zoom(zoomed_axes_1, edgecolor="gray")
+
+ax.grid(linestyle=":")
+plt.tight_layout()
+plt.savefig('toughness_edbo_comparisons.png', dpi=400)
+plt.savefig('toughness_edbo_comparisons.pdf', dpi=400)
 
