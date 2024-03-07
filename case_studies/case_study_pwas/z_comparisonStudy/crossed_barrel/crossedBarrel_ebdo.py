@@ -1,7 +1,13 @@
+# This file uses EDBO to solve the crossed-barrel structure optimization problem
+
+import sys
+
 from olympus import Emulator
 emulator = Emulator(dataset='crossed_barrel', model='BayesNeuralNet')
 
-from edbo.utils import Data
+# Install the EDBO package, note that slight updates of the code is needed to enable input the number of initial samples
+# see the forked version at https://github.com/mjzhu-p/olympus/tree/pwas_comp for the changes needed
+from edbo.utils import Data  # pip install edbo; https://github.com/b-shields/edbo
 from edbo.plot_utils import average_convergence, plot_avg_convergence
 import pandas as pd
 import numpy as np
@@ -65,16 +71,20 @@ def crossedBarrel_multiRun(export_path_1 = None,
         # tic = time.perf_counter()
         tic = time.process_time()
 
-        # Instantiate edbo.BO
-        bo = BO(exindex=exindex,                       # Experiment index to look up results from
-                domain=exindex.drop('objective_function', axis=1),  # Reaction space
-                # results=reaction1.data.iloc[start],         # Starting point
-                # init_method='external',                     # Default initial scheme: random ('rand')
-                initial_sample = initial_sample,
-                batch_size=batch_size,                         # Choose 1 experiments on each iteraiton, i.e., Sequential optimization experiment
-                acquisition_function='EI',                     # Use expected improvement
-                fast_comp=True)                                # Speed up the simulations using gpytorch's fast computation features
-
+        try:
+            # Instantiate edbo.BO
+            bo = BO(exindex=exindex,                       # Experiment index to look up results from
+                    domain=exindex.drop('objective_function', axis=1),  # Reaction space
+                    # results=reaction1.data.iloc[start],         # Starting point
+                    # init_method='external',                     # Default initial scheme: random ('rand')
+                    initial_sample = initial_sample,
+                    batch_size=batch_size,                         # Choose 1 experiments on each iteraiton, i.e., Sequential optimization experiment
+                    acquisition_function='EI',                     # Use expected improvement
+                    fast_comp=True)                                # Speed up the simulations using gpytorch's fast computation features
+        except:
+            errstr = "Make sure to update the EDBO package code according to the notes at the begining of this file"
+            print(errstr)
+            sys.exit(1)
         # Run simulation
         bo.simulate(iterations=iterations, seed=seed(i))  # rng default for reproducibility
 
@@ -122,9 +132,11 @@ Ntests = 30  # number of tests executed on the same problem
 initial_sample = 10
 batch_size = 1 # sequential exp.
 iterations = 40
-export_path_1 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/edbo_toughness_1901_5.csv'
-export_path_2 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/ebdo_all_1901_5.csv'
-export_path_3 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/ebdo_cpu_1901_5.csv'
+
+# Define the path to save the results
+export_path_1 = 'edbo_toughness.csv'
+export_path_2 = 'ebdo_all.csv'
+export_path_3 = 'ebdo_cpu.csv'
 
 results, mean, std = crossedBarrel_multiRun(export_path_1 = export_path_1,
                                         export_path_2 = export_path_2,

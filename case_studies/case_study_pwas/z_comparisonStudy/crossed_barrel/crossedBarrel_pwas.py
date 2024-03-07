@@ -1,4 +1,6 @@
-from pwas.main_pwas import PWAS
+# This file uses EDBO to solve the crossed-barrel structure optimization problem
+
+from pwasopt.main_pwas import PWAS # pip install pwasopt; https://github.com/mjzhu-p/PWAS
 import numpy as np
 
 from olympus import Emulator
@@ -97,7 +99,7 @@ if Ntests == 1:
 else:
     import pandas as pd
     cpu_time = pd.DataFrame(cpu_time)
-    export_path_3 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/pwas_cpu_1901_5.csv'
+    export_path_3 = 'pwas_cpu.csv' #Define the path to save the results
     cpu_time.to_csv(export_path_3)
     nvars = nc + nint + nd
     nvars_encoded = out_Ntests[0]['self'].prob.nvars_encoded
