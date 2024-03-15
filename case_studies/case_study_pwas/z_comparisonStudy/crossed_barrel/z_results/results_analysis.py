@@ -34,9 +34,9 @@ def get_raw_traces(data, goal='maximize'):
 # %%
 matrix_excel_file = 'results_pwas_edbo.xlsx'
 sheet_name_pwas = 'pwas'
-sheet_name_edbo_1 = 'edbo_100'
-sheet_name_edbo_2 = 'edbo_10'
-sheet_name_edbo_3 = 'edbo_5'
+sheet_name_edbo_1 = 'edbo_1'
+sheet_name_edbo_2 = 'edbo_2'
+sheet_name_edbo_3 = 'edbo_3'
 pwas_df = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_pwas).iloc[0:, 1:]
 edbo_df_1 = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_edbo_1).iloc[0:, 1:]
 edbo_df_2 = pd.read_excel(matrix_excel_file, sheet_name = sheet_name_edbo_2).iloc[0:, 1:]
@@ -105,7 +105,7 @@ plt.savefig('toughness_trace_mean_crossedBarrel.pdf', dpi=400)
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
-zoomed_axes_1 = ax.inset_axes([0.75, 0.3, 0.15, 0.45], # [x, y, width, height] w.r.t. axes
+zoomed_axes_1 = ax.inset_axes([0.82, 0.3, 0.15, 0.45], # [x, y, width, height] w.r.t. axes
                                 xticks= (range(40,51,5)), yticks= (range(33,37,3)),
                                 xlim=[40, 50], ylim=[33, 37.3], # sets viewport & tells relation to main axes
                               )
@@ -114,9 +114,10 @@ for ax_ in ax, zoomed_axes_1:
     plot_trace_mean(raw_traces_edbo_1, use_std_err=True, label='EDBO_1', ax=ax_, color="#FF9800")
     plot_trace_mean(raw_traces_edbo_2, use_std_err=True, label='EDBO_2', ax=ax_, color= "#CD7F32")
     plot_trace_mean(raw_traces_edbo_3, use_std_err=True, label='EDBO_3', ax=ax_, color="#FAC898")
+    plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax_, color="#4CAF50")
 
 # ax.axvline(x=10, color='grey', linestyle='--', label='initial samples')
-ax.legend(loc='lower right',ncol=3,frameon=False, fontsize='small')
+ax.legend(loc='lower center',ncol=2,frameon=False, fontsize='small')
 ax.set_yticks(range(9, 38, 3))
 ax.set_ylim(9, 38)
 ax.set_ylabel('Best toughness achieved (J)', fontsize=14)
