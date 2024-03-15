@@ -4,7 +4,7 @@ import numpy as np
 def get_exp_yield(x_complete,rxn_name= 'suzuki'):
 
     """
-    TODO: add comments
+    This file is used to obtain the corresponding yield of x_complete (optimization variables to test) 
     """
 
     x = np.round(x_complete,decimals=1)
