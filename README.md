@@ -5,7 +5,7 @@ Please see the [main repository](https://github.com/MolChemML/ExpDesign) for the
 
 **Note**:
 * for **_EDBO_**, minor updates are required for the `bro.py` file to be able to specify the number of initial samples. See the specifics at https://github.com/mjzhu-p/edbo/tree/pwas_comp
-* for **_Olympus_** package modified here, some updates are only needed for Windows systems.
+* for **_Olympus_** package modified here, some updates are only needed for Windows systems (see the commit `2615b001fcfd9754a03f5a4b43b69c30afd4d993` adopted from [@felix-s-k](https://github.com/aspuru-guzik-group/olympus/pull/34) , you can revert changes in this commit if you are using a Linux system).
 
 
 arXiv: {To Add}
