@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Test data
+
+File from EDBO package: https://github.com/b-shields/edbo/blob/master/experiments/data_loader.py
 """
 
 # Imports
