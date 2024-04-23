@@ -1,5 +1,5 @@
 # This is a forked version of the Olympus package
-Please see the folder [`case_study_pwas`](https://github.com/mjzhu-p/olympus/tree/pwas_comp/case_studies/case_study_pwas/z_comparisonStudy) under ``case_studies`` for the detailed comparison studies reported in the paper "_Discrete and mixed-variable experimental design with surrogate-based approach_"
+Please see the folder [`case_study_pwas`](https://github.com/mjzhu-p/olympus/tree/pwas_comp/case_studies/case_study_pwas/z_comparisonStudy) under ``case_studies`` for the detailed comparison studies reported in the paper "[_Discrete and mixed-variable experimental design with surrogate-based approach_](https://urldefense.com/v3/__https://chemrxiv.org/engage/chemrxiv/article-details/6626a713418a5379b0674df2__;!!PDiH4ENfjr2_Jw!C8gWZN1GmplOFNJc2FBxMi5gJxaT-VvJbeNeaq0kOX_WpczRONO5EQw0Qfseh-HHnwS48_McOz7EYB8TCjhzGguCluiS7A$)"
 
 Please see the [main repository](https://github.com/MolChemML/ExpDesign) for the explanation of the case studies.
 
