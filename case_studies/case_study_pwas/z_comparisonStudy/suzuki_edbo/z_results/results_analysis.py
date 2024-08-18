@@ -52,6 +52,36 @@ ranks = {v[0]: i + 1 for i, v in enumerate(sort_values)}
 #         traces.append([trace0, trace1, trace2])
 #     return np.array(traces)
 
+
+def data_converter(data_pkl,type ='one'):
+    data_all_repeats = []
+    for campaign in data_pkl:
+        if type == 'one':
+            params = campaign.observations.get_params()
+            values = campaign.observations.get_values()
+        else:
+            params = campaign['params']
+            values = campaign['values']
+        # store run results into a DataFrame
+        electrophile = [x[0] for x in params]
+        nucleophile = [x[1] for x in params]
+        base = [x[2] for x in params]
+        ligand = [x[3] for x in params]
+        solvent = [x[4] for x in params]
+
+        if type == 'one':
+            yield_ = [y[0] for y in values]
+        else:
+            yield_ = [y for y in values]
+        data = pd.DataFrame({
+            'electrophile': electrophile, 'nucleophile': nucleophile, 'base': base, 'ligand': ligand,
+            'solvent': solvent,
+            'yield': yield_,
+        })
+        data_all_repeats.append(data)
+
+    return data_all_repeats
+
 def get_raw_traces(data, goal='maximize'):
     traces = []
     for d in data:
@@ -135,8 +165,8 @@ def plot_trace_mean(traces, obj_num=None, ax=None, color=None, label=None, use_s
 
 def plot_num_eval_top_k(df, ax):
     # '#08294C',
-    color = ['#0e4581', '#EB0789', "#75BBE1", "#F75BB6", "#4CAF50", "#FF9800"]
-    hue_order = ['Random', 'Genetic', 'Hyperopt', 'Botorch', 'PWAS', 'EDBO']
+    color = ['#0e4581', '#EB0789', "#75BBE1", "#F75BB6", '#8B4513', "#4CAF50", "#FF9800"]
+    hue_order = ['Random', 'Genetic', 'Hyperopt', 'Botorch', 'Gryffin', 'PWAS', 'EDBO']
     _ = sns.boxplot(data=df, x='method', y='num_eval', linewidth=2., ax=ax, palette=color, hue_order=hue_order)
     _ = sns.stripplot(data=df, x='method', y='num_eval', size=8, linewidth=1., ax=ax, palette=color,
                       hue_order=hue_order)
@@ -219,9 +249,6 @@ num_evals_pwas = get_num_eval_top_k_excel(pwas_df, k=k)
 num_evals_edbo = get_num_eval_top_k_excel(edbo_df, k=k)
 
 
-
-
-
 # %%
 
 # load the results
@@ -229,72 +256,19 @@ res_random = pickle.load(open('results_random.pkl', 'rb'))  # olympus campaigns
 res_hyperopt = pickle.load(open('results_hyperopt.pkl', 'rb'))  # list of dictionaries
 res_deap = pickle.load(open('results_genetic.pkl', 'rb'))  # list of dataframes
 res_botorch = pickle.load(open('results_botorch.pkl', 'rb'))  # list of olympus campaigns
-# res_gryffin
+res_gryffin = pickle.load(open('results_gryffin.pkl', 'rb'))  # list of olympus campaigns
 
-# convert random results
-data_all_repeats = []
-for campaign in res_random:
-    params = campaign.observations.get_params()
-    values = campaign.observations.get_values()
-    # store run results into a DataFrame
-    electrophile = [x[0] for x in params]
-    nucleophile = [x[1] for x in params]
-    base = [x[2] for x in params]
-    ligand = [x[3] for x in params]
-    solvent = [x[4] for x in params]
-
-    yield_ = [y[0] for y in values]
-    data = pd.DataFrame({
-        'electrophile': electrophile, 'nucleophile': nucleophile, 'base': base, 'ligand': ligand, 'solvent': solvent,
-        'yield': yield_,
-    })
-    data_all_repeats.append(data)
-res_random = data_all_repeats
-
-# convert hyperopt results
-data_all_repeats = []
-for campaign in res_hyperopt:
-    params = campaign['params']
-    values = campaign['values']
-    # store run results into a DataFrame
-    electrophile = [x[0] for x in params]
-    nucleophile = [x[1] for x in params]
-    base = [x[2] for x in params]
-    ligand = [x[3] for x in params]
-    solvent = [x[4] for x in params]
-
-    yield_ = [y for y in values]
-    data = pd.DataFrame({
-        'electrophile': electrophile, 'nucleophile': nucleophile, 'base': base, 'ligand': ligand, 'solvent': solvent,
-        'yield': yield_,
-    })
-    data_all_repeats.append(data)
-res_hyperopt = data_all_repeats
-
-# convert botorch results
-data_all_repeats = []
-for campaign in res_botorch:
-    params = campaign.observations.get_params()
-    values = campaign.observations.get_values()
-    # store run results into a DataFrame
-    electrophile = [x[0] for x in params]
-    nucleophile = [x[1] for x in params]
-    base = [x[2] for x in params]
-    ligand = [x[3] for x in params]
-    solvent = [x[4] for x in params]
-
-    yield_ = [y[0] for y in values]
-    data = pd.DataFrame({
-        'electrophile': electrophile, 'nucleophile': nucleophile, 'base': base, 'ligand': ligand, 'solvent': solvent,
-        'yield': yield_,
-    })
-    data_all_repeats.append(data)
-res_botorch = data_all_repeats
+# convert results
+res_random = data_converter(res_random)
+res_hyperopt = data_converter(res_hyperopt, type = 'two')
+res_botorch = data_converter(res_botorch)
+res_gryffin = data_converter(res_gryffin)
 
 print('random : ', len(res_random))
 print('hyperopt : ', len(res_hyperopt))
 print('deap : ', len(res_deap))
 print('botorch : ', len(res_botorch))
+print('gryffin : ', len(res_gryffin))
 
 # %%
 
@@ -311,21 +285,24 @@ raw_traces_random = get_raw_traces(res_random)
 raw_traces_deap = get_raw_traces(res_deap)
 raw_traces_hyperopt = get_raw_traces(res_hyperopt)
 raw_traces_botorch = get_raw_traces(res_botorch)
+raw_traces_gryffin = get_raw_traces(res_gryffin)
 
 rank_traces_random = get_rank_traces(res_random)
 rank_traces_deap = get_rank_traces(res_deap)
 rank_traces_hyperopt = get_rank_traces(res_hyperopt)
 rank_traces_botorch = get_rank_traces(res_botorch)
+rank_traces_gryffin = get_rank_traces(res_gryffin)
 
 # k = 20
 num_evals_random = get_num_eval_top_k(res_random, k=k)
 num_evals_deap = get_num_eval_top_k(res_deap, k=k)
 num_evals_hyperopt = get_num_eval_top_k(res_hyperopt, k=k)
 num_evals_botorch = get_num_eval_top_k(res_botorch, k=k)
+num_evals_gryffin = get_num_eval_top_k(res_gryffin, k=k)
 
 dict_ = []
-for set_, method in zip([num_evals_random, num_evals_deap, num_evals_hyperopt, num_evals_botorch, num_evals_pwas, num_evals_edbo],
-                        ['Random', 'Genetic', 'Hyperopt', 'Botorch', 'PWAS', 'EDBO']):
+for set_, method in zip([num_evals_random, num_evals_deap, num_evals_hyperopt, num_evals_botorch, num_evals_gryffin, num_evals_pwas, num_evals_edbo],
+                        ['Random', 'Genetic', 'Hyperopt', 'Botorch', 'Gryffin','PWAS', 'EDBO']):
     for s in set_:
         dict_.append({'method': method, 'num_eval': s})
 
@@ -336,7 +313,7 @@ df_num_eval = pd.DataFrame(dict_)
 
 # %%
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+fig, ax = plt.subplots(1, 1, figsize=(7, 4))
 
 zoomed_axes_2 = ax.inset_axes([0.7, 0.35, 0.25, 0.42], # [x, y, width, height] w.r.t. axes
                                 xticks= (range(45,51,5)), yticks= (range(90,100,5)),
@@ -348,6 +325,7 @@ for ax_ in ax, zoomed_axes_2:
     plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax_, color='#EB0789')
     plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax_, color="#75BBE1")
     plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax_, color="#F75BB6")
+    plot_trace_mean(raw_traces_pwas, use_std_err=True, label='Gryffin', ax=ax_, color= '#8B4513')
     plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax_, color="#4CAF50")
     plot_trace_mean(raw_traces_edbo, use_std_err=True, label='EDBO', ax=ax_, color="#FF9800")
 
@@ -369,7 +347,7 @@ plt.savefig('yield_trace_mean_suzuki_edbo.pdf', dpi=400)
 
 # %%
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 4.5))
+fig, ax = plt.subplots(1, 1, figsize=(7, 4.5))
 
 # ['#0e4581', '#EB0789', "#75BBE1", "#F75BB6"]
 
@@ -377,6 +355,7 @@ plot_trace_mean(rank_traces_random, use_std_err=True, label='Random', ax=ax, col
 plot_trace_mean(rank_traces_deap, use_std_err=True, label='Genetic', ax=ax, color='#EB0789')
 plot_trace_mean(rank_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax, color="#75BBE1")
 plot_trace_mean(rank_traces_botorch, use_std_err=True, label='Botorch', ax=ax, color="#F75BB6")
+plot_trace_mean(rank_traces_gryffin, use_std_err=True, label='Gryffin', ax=ax, color="#8B4513")
 plot_trace_mean(rank_traces_pwas, use_std_err=True, label='PWAS', ax=ax, color="#4CAF50")
 plot_trace_mean(rank_traces_edbo, use_std_err=True, label='EDBO', ax=ax, color="#FF9800")
 
@@ -394,7 +373,7 @@ plt.savefig('yield_rank_traces_suzuki_edbo.pdf', dpi=400)
 
 # %%
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 4.5))
+fig, ax = plt.subplots(1, 1, figsize=(7, 4.5))
 
 plot_num_eval_top_k(df_num_eval, ax=ax)
 
