@@ -13,7 +13,7 @@ class Gryffin(AbstractPlanner):
     def __init__(
         self,
         goal="minimize",
-        num_cpus=4,
+        num_cpus=1,
         use_descriptors=True,
         auto_desc_gen=False,
         batches=1,
