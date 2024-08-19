@@ -10,7 +10,8 @@ planners = [
     'RandomSearch',
     'Botorch',
     'Hyperopt',
-    'Genetic'
+    'Genetic',
+    'Gryffin'
 ]
 database = Database(kind='sqlite')
 

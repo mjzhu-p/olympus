@@ -9,9 +9,10 @@ import time # for tic-toc
 olymp = Olympus()
 planners = [
     # 'RandomSearch',
-    'Botorch',
+    # 'Botorch',
     # 'Hyperopt',
-    # 'Genetic'
+    # 'Genetic',
+    'Gryffin',
 ]
 database = Database(kind='sqlite')
 
@@ -38,8 +39,9 @@ for i in range(0, Ntests):
 
 import pandas as pd
 cpu_time = pd.DataFrame(cpu_time)
-export_path_3 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/botorch_cpu.csv'
-cpu_time.to_csv(export_path_3)
+# export_path_4 = 'C:/Users/Mengjia/Desktop/IMT/z-Research/a_on_going_project/MILP_IC/Rxn opt benchmark/z_olympus_code/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/gryffin_cpu.csv'
+export_path_4 = 'C:/Users/j18951mz/OneDrive - The University of Manchester/Desktop/UoM/z_research/zzz_GitHub repo/olympus/case_studies/case_study_pwas/z_comparisonStudy/crossed_barrel/gryffin_cpu.csv'
+cpu_time.to_csv(export_path_4)
 
 observations = [campaign.observations for campaign in database]
 pickle.dump(observations, open('results_test.pkl', 'wb'))

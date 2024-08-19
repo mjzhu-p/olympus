@@ -22,7 +22,7 @@ class Gryffin(AbstractPlanner):
         boosted=False,
         random_seed=None,
         acquisition_optimizer="adam",  #'genetic',
-        verbosity=4,
+        verbosity=0,
     ):
         """
         A Bayesian optimization algorithm based on Bayesian Kernel Density estimation which supports
@@ -66,7 +66,8 @@ class Gryffin(AbstractPlanner):
                     "size": 1,
                     "low": param.low,
                     "high": param.high,
-                    "stride": param.stride,
+                    "stride": 1,
+                    # "stride": param.stride,
                 }
             elif param.type == "categorical":
                 param_dict = {
