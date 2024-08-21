@@ -51,7 +51,7 @@ raw_traces_edbo_3 = np.array(edbo_df_3.cummax(axis=1))
 
 # load the results
 res_other_solvers = pickle.load(open('results_others.pkl', 'rb'))
-res_gryffin = pickle.load(open('results_test.pkl', 'rb'))
+res_gryffin = pickle.load(open('results_gryffin.pkl', 'rb'))
 # Group every 30 entries into a new list
 grouped_lists = []
 for i in range(0, len(res_other_solvers), 30):
