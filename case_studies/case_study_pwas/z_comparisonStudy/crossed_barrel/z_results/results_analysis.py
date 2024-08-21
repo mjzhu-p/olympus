@@ -51,11 +51,13 @@ raw_traces_edbo_3 = np.array(edbo_df_3.cummax(axis=1))
 
 # load the results
 res_other_solvers = pickle.load(open('results_others.pkl', 'rb'))
+res_gryffin = pickle.load(open('results_test.pkl', 'rb'))
 # Group every 30 entries into a new list
 grouped_lists = []
 for i in range(0, len(res_other_solvers), 30):
     group = res_other_solvers[i:i + 30]
     grouped_lists.append(group)
+
 
 res_random = grouped_lists[0]
 res_hyperopt = grouped_lists[1]
@@ -66,12 +68,13 @@ raw_traces_random = get_raw_traces(res_random)
 raw_traces_deap = get_raw_traces(res_deap)
 raw_traces_hyperopt = get_raw_traces(res_hyperopt)
 raw_traces_botorch = get_raw_traces(res_botorch)
+raw_traces_gryffin = get_raw_traces(res_gryffin)
 
 
 
 # %%
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+fig, ax = plt.subplots(1, 1, figsize=(6, 6))
 
 zoomed_axes_2 = ax.inset_axes([0.82, 0.3, 0.13, 0.36], # [x, y, width, height] w.r.t. axes
                                 xticks= (range(40,51,5)), yticks= (range(27,37,3)),
@@ -82,6 +85,7 @@ for ax_ in ax, zoomed_axes_2:
     plot_trace_mean(raw_traces_deap, use_std_err=True, label='Genetic', ax=ax_, color='#EB0789')
     plot_trace_mean(raw_traces_hyperopt, use_std_err=True, label='Hyperopt', ax=ax_, color="#75BBE1")
     plot_trace_mean(raw_traces_botorch, use_std_err=True, label='Botorch', ax=ax_, color="#F75BB6")
+    plot_trace_mean(raw_traces_gryffin, use_std_err=True, label='Gryffin', ax=ax_, color="#8B4513")
     plot_trace_mean(raw_traces_pwas, use_std_err=True, label='PWAS', ax=ax_, color="#4CAF50")
     plot_trace_mean(raw_traces_edbo_1, use_std_err=True, label='EDBO_1', ax=ax_, color="#FF9800")
     # plot_trace_mean(raw_traces_edbo_2, use_std_err=True, label='EDBO_2', ax=ax, color="#FFE5B4")
